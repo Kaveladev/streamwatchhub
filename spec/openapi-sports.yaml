@@ -1,0 +1,135 @@
+openapi: 3.0.3
+info:
+  title: StreamWatchHub Sports
+  description: |
+    **Where-to-watch broadcast API for football.**
+
+    Get the exact TV channel / streaming service that broadcasts a football match in any of 10
+    supported countries — live fixtures, channel mapping per country, league directories.
+
+    Use cases: scheduling apps, fan websites, sports betting clients, smart-TV guides, chatbots.
+
+    **Coverage (Wave 1):** Saudi Arabia, UAE, Qatar, Serbia, Hungary, Bulgaria, Romania, Italy,
+    Spain, Russia. Big-5 European leagues, UCL/UEL/UECL, Saudi Pro League, Russian Premier League,
+    domestic leagues per country, Argentine Liga Profesional, Brazilian Serie A, Turkish Süper Lig.
+
+    **Auth:** Use your RapidAPI key via the standard X-RapidAPI-Key header.
+  version: 1.0.0
+  contact:
+    name: StreamWatchHub
+    url: https://streamwatchhub.com
+servers:
+  - url: https://streamwatchhub-sports.p.rapidapi.com
+    description: Production (via RapidAPI)
+  - url: https://api.streamwatchhub.com
+    description: Direct (enterprise customers)
+paths:
+  /v1/countries:
+    get:
+      summary: List supported countries
+      tags: [Meta]
+      responses:
+        '200':
+          description: List of 10 supported countries with timezone and language.
+  /v1/sports/leagues:
+    get:
+      summary: List leagues for a country
+      description: Returns all leagues mapped for the given country, with primary + secondary broadcasters.
+      tags: [Leagues]
+      parameters:
+        - $ref: '#/components/parameters/country'
+      responses:
+        '200':
+          description: Leagues + broadcasters for the country
+        '400': { $ref: '#/components/responses/CountryRequired' }
+  /v1/sports/platforms:
+    get:
+      summary: List sport broadcasters in a country
+      tags: [Leagues]
+      parameters:
+        - $ref: '#/components/parameters/country'
+      responses:
+        '200':
+          description: Unique platforms broadcasting football in the country
+  /v1/sports/channel-for:
+    get:
+      summary: Resolve channel for a specific league × country
+      tags: [Resolver]
+      parameters:
+        - $ref: '#/components/parameters/country'
+        - name: league
+          in: query
+          required: true
+          schema: { type: string }
+          example: Premier League
+        - name: season
+          in: query
+          required: false
+          schema: { type: string }
+          example: 2025-26
+      responses:
+        '200':
+          description: Resolved broadcaster + secondary + confidence score
+  /v1/sports/matches:
+    get:
+      summary: List fixtures for a date
+      description: Returns all fixtures across active leagues for the given date, each resolved to the broadcaster in the requested country.
+      tags: [Matches]
+      parameters:
+        - $ref: '#/components/parameters/country'
+        - name: date
+          in: query
+          schema: { type: string, format: date }
+          example: 2026-05-23
+        - name: live
+          in: query
+          schema: { type: boolean }
+          description: Only return currently-live matches
+        - name: league
+          in: query
+          schema: { type: string }
+          description: Filter by league name
+      responses:
+        '200':
+          description: Matches with broadcaster resolution
+  /v1/sports/match/{id}:
+    get:
+      summary: Get single match + broadcaster
+      tags: [Matches]
+      parameters:
+        - $ref: '#/components/parameters/country'
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Match detail + resolution
+        '404':
+          description: Match not found
+components:
+  parameters:
+    country:
+      name: country
+      in: query
+      required: true
+      description: ISO 3166-1 alpha-2 code. Supported, Wave-1 → SA AE QA RS HU BG RO IT ES RU.
+      schema:
+        type: string
+        enum: [SA, AE, QA, RS, HU, BG, RO, IT, ES, RU]
+      example: SA
+  responses:
+    CountryRequired:
+      description: Missing or unsupported country
+  securitySchemes:
+    RapidAPIKey:
+      type: apiKey
+      in: header
+      name: X-RapidAPI-Key
+    DirectBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: swh_live_*
+security:
+  - RapidAPIKey: []
+  - DirectBearer: []

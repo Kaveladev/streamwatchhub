@@ -1,0 +1,126 @@
+openapi: 3.0.3
+info:
+  title: StreamWatchHub Movies & Series
+  description: |
+    **Where-to-watch streaming availability for movies and TV series.**
+
+    For any movie or TV show, get the exact streaming services (Netflix, Disney+, Apple TV,
+    OSN+, Movistar Plus+, Kinopoisk, etc.) where it's available in a given country, including
+    whether it's subscription, rent, buy, or ad-supported.
+
+    Use cases: title-finder apps ("where can I watch X?"), recommendation engines, comparison
+    services, smart-TV interfaces, chat assistants.
+
+    **Coverage (Wave 1):** 10 countries × 70+ streaming providers × hundreds of titles, with
+    daily refresh. Data sourced from TMDB watch/providers + manual curation.
+
+    **Auth:** Use your RapidAPI key via the standard X-RapidAPI-Key header.
+  version: 1.0.0
+  contact:
+    name: StreamWatchHub
+    url: https://streamwatchhub.com
+servers:
+  - url: https://streamwatchhub-streaming.p.rapidapi.com
+    description: Production (via RapidAPI)
+  - url: https://api.streamwatchhub.com
+    description: Direct (enterprise customers)
+paths:
+  /v1/countries:
+    get:
+      summary: List supported countries
+      tags: [Meta]
+      responses:
+        '200':
+          description: 10 supported countries with timezone + language.
+  /v1/streaming/title/{tmdb_id}:
+    get:
+      summary: Where to watch a specific title
+      description: Resolve a movie or series (by TMDB id) to streaming providers in the requested country.
+      tags: [Titles]
+      parameters:
+        - $ref: '#/components/parameters/country'
+        - name: tmdb_id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 76479
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [movie, tv]
+          example: tv
+      responses:
+        '200':
+          description: Title metadata + providers + deep links
+        '404':
+          description: Title not in catalog
+  /v1/streaming/trending:
+    get:
+      summary: Trending titles in a country
+      description: Top-N most popular titles with at least one streaming provider in the requested country.
+      tags: [Discovery]
+      parameters:
+        - $ref: '#/components/parameters/country'
+        - name: type
+          in: query
+          schema: { type: string, enum: [movie, tv] }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20, maximum: 50 }
+      responses:
+        '200':
+          description: Ordered list of titles with providers
+  /v1/streaming/search:
+    get:
+      summary: Search titles
+      description: Full-text search by title or original title.
+      tags: [Discovery]
+      parameters:
+        - $ref: '#/components/parameters/country'
+        - name: q
+          in: query
+          required: true
+          schema: { type: string, minLength: 2 }
+        - name: type
+          in: query
+          schema: { type: string, enum: [movie, tv, both] }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 20, maximum: 50 }
+      responses:
+        '200':
+          description: Matching titles with availability
+  /v1/streaming/providers:
+    get:
+      summary: List streaming providers in a country
+      description: All streaming services known to operate in the country, sorted by catalog size.
+      tags: [Providers]
+      parameters:
+        - $ref: '#/components/parameters/country'
+      responses:
+        '200':
+          description: Providers with title counts and logos
+components:
+  parameters:
+    country:
+      name: country
+      in: query
+      required: true
+      description: ISO 3166-1 alpha-2. Wave-1 → SA AE QA RS HU BG RO IT ES RU.
+      schema:
+        type: string
+        enum: [SA, AE, QA, RS, HU, BG, RO, IT, ES, RU]
+      example: IT
+  securitySchemes:
+    RapidAPIKey:
+      type: apiKey
+      in: header
+      name: X-RapidAPI-Key
+    DirectBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: swh_live_*
+security:
+  - RapidAPIKey: []
+  - DirectBearer: []
