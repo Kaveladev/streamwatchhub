@@ -4,7 +4,7 @@
 
 Look up the exact streaming service or TV channel that carries any movie, series, or football match in 10 supported countries — with deep links, monetization type (subscription / rent / buy / ads), and broadcaster confidence scores.
 
-[![Website](https://img.shields.io/badge/Website-streamwatchhub.com-00CC4F?style=for-the-badge&logo=googlechrome&logoColor=white)](https://streamwatchhub.com/api/) [![Movies & Series on RapidAPI](https://img.shields.io/badge/RapidAPI-Movies%20%26%20Series-00CC4F?style=for-the-badge)](https://rapidapi.com/kavela-kavela-default/api/streamwatchhub-movies-series/pricing) [![Sports on RapidAPI](https://img.shields.io/badge/RapidAPI-Sports-00CC4F?style=for-the-badge)](https://rapidapi.com/)
+[![Website](https://img.shields.io/badge/Website-streamwatchhub.com-00CC4F?style=for-the-badge&logo=googlechrome&logoColor=white)](https://streamwatchhub.com/api/) [![Movies & Series on RapidAPI](https://img.shields.io/badge/RapidAPI-Movies%20%26%20Series-00CC4F?style=for-the-badge)](https://rapidapi.com/kavela-kavela-default/api/streamwatchhub-movies-series/pricing) ![Sports on RapidAPI (coming soon)](https://img.shields.io/badge/RapidAPI-Sports%20%E2%80%94%20coming%20soon-3f3f46?style=for-the-badge)
 
 ---
 
