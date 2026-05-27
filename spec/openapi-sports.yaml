@@ -9,7 +9,7 @@ info:
 
     Use cases: scheduling apps, fan websites, sports betting clients, smart-TV guides, chatbots.
 
-    **Coverage (Wave 1):** Saudi Arabia, UAE, Qatar, Serbia, Hungary, Bulgaria, Romania, Italy,
+    **Coverage:** Saudi Arabia, UAE, Qatar, Serbia, Hungary, Bulgaria, Romania, Italy,
     Spain, Russia. Big-5 European leagues, UCL/UEL/UECL, Saudi Pro League, Russian Premier League,
     domestic leagues per country, Argentine Liga Profesional, Brazilian Serie A, Turkish Süper Lig.
 
@@ -113,10 +113,10 @@ components:
       name: country
       in: query
       required: true
-      description: ISO 3166-1 alpha-2 code. Supported, Wave-1 → SA AE QA RS HU BG RO IT ES RU.
+      description: ISO 3166-1 alpha-2. Supported: SA AE QA RS HU BG RO IT ES RU TR US (12 countries).
       schema:
         type: string
-        enum: [SA, AE, QA, RS, HU, BG, RO, IT, ES, RU]
+        enum: [SA, AE, QA, RS, HU, BG, RO, IT, ES, RU, TR, US]
       example: SA
   responses:
     CountryRequired:
