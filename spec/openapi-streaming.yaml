@@ -107,10 +107,10 @@ components:
       name: country
       in: query
       required: true
-      description: ISO 3166-1 alpha-2. Supported: SA AE QA RS HU BG RO IT ES RU TR US (12 countries).
+      description: "ISO 3166-1 alpha-2. Supported: SA AE QA RS HU BG RO IT ES RU TR US GB DE FR BR IN (17 countries)."
       schema:
         type: string
-        enum: [SA, AE, QA, RS, HU, BG, RO, IT, ES, RU, TR, US]
+        enum: [SA, AE, QA, RS, HU, BG, RO, IT, ES, RU, TR, US, GB, DE, FR, BR, IN]
       example: IT
   securitySchemes:
     RapidAPIKey:
