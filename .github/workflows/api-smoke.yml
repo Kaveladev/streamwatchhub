@@ -1,0 +1,62 @@
+name: API smoke test (Newman)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'spec/**'
+      - '.github/workflows/api-smoke.yml'
+  schedule:
+    - cron: '17 */6 * * *'   # every 6h at :17, offset from monitor
+  workflow_dispatch:
+
+jobs:
+  newman:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install newman
+        run: npm i -g newman
+
+      - name: Fetch latest collection from Postman
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+        run: |
+          curl -sf -H "X-Api-Key: $POSTMAN_API_KEY" \
+            "https://api.getpostman.com/collections/55323396-a6493561-bbf6-4b6f-a519-cc49022ad46c" \
+            -o collection.json
+          test -s collection.json
+
+      - name: Build runtime environment
+        env:
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+        run: |
+          cat > env.json <<JSON
+          {
+            "name": "ci",
+            "values": [
+              {"key": "baseUrl",        "value": "https://streamwatchhub-streaming.p.rapidapi.com", "enabled": true},
+              {"key": "X-RapidAPI-Host","value": "streamwatchhub-streaming.p.rapidapi.com",        "enabled": true},
+              {"key": "X-RapidAPI-Key", "value": "${RAPIDAPI_KEY}",                                "enabled": true},
+              {"key": "country",        "value": "IT",                                             "enabled": true}
+            ]
+          }
+          JSON
+
+      - name: Run newman
+        run: |
+          newman run collection.json -e env.json --reporters cli,json --reporter-json-export newman-result.json --timeout-request 8000
+
+      - name: Upload result artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-result
+          path: newman-result.json
+          retention-days: 14
