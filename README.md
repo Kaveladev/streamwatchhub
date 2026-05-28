@@ -32,18 +32,23 @@ Look up the exact streaming service or TV channel that carries any movie, series
 - Trending, search, by-TMDB-ID lookup
 - Localized titles, posters, overviews (TMDB-native per locale)
 
-### ⚽ StreamWatchHub Sports
+### ⚽ StreamWatchHub Sports — *direct API live · RapidAPI listing pending*
 - **23+ football leagues**, live + upcoming + recent fixtures
 - Live scores updated every 5 minutes during match windows
 - **Per-country broadcaster resolver** — same league, different channel in each of 17 countries
 - Big-5 European leagues + UCL/UEL/UECL + Saudi Pro League + Russian Premier League + 8 domestic leagues
 - Backed by api-sports.io fixture data + curated broadcaster mapping
 
-Get the bundle for $9.99/mo or each separately for $4.99/mo. Free tier available (1,000 calls/month).
+**Movies & Series** is live on RapidAPI ($4.99/mo Pro tier · free 1,000 calls/month).  
+**Sports** ships on RapidAPI soon — until then, direct API access available for enterprise (`Authorization: Bearer …`).
 
 ---
 
 ## Coverage (17 countries)
+
+Streaming availability is live in all 17. Football broadcaster mapping is seeded for all 17 but marketed via the bundled `/v1/sports/*` API surface — full RapidAPI Sports listing publishes when the per-country fixture coverage hits our 90% target.
+
+
 
 🇺🇸 USA · 🇬🇧 UK · 🇩🇪 Germany · 🇫🇷 France · 🇮🇹 Italy · 🇪🇸 Spain · 🇧🇷 Brazil · 🇮🇳 India · 🇷🇺 Russia · 🇸🇦 Saudi Arabia · 🇦🇪 UAE · 🇶🇦 Qatar · 🇷🇸 Serbia · 🇭🇺 Hungary · 🇧🇬 Bulgaria · 🇷🇴 Romania · 🇹🇷 Turkey
 
@@ -127,6 +132,8 @@ Full schema: [`spec/openapi-sports.yaml`](./spec/openapi-sports.yaml) · [`spec/
 | **Enterprise** | Custom | Custom | Unlimited |
 
 Subscribe on RapidAPI — no contract, cancel anytime.
+
+> **Sports access today:** Direct API via Bearer token (enterprise / partner). RapidAPI Sports listing launches once we hit broadcaster coverage targets across all 17 markets.
 
 ---
 
