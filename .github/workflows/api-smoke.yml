@@ -7,7 +7,7 @@ on:
       - 'spec/**'
       - '.github/workflows/api-smoke.yml'
   schedule:
-    - cron: '17 */6 * * *'   # every 6h at :17, offset from monitor
+    - cron: '17 */6 * * *'   # every 6h at :17, offset from Postman monitor
   workflow_dispatch:
 
 jobs:
@@ -17,14 +17,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Skip if secrets missing
+        id: check
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+        run: |
+          if [ -z "$POSTMAN_API_KEY" ] || [ -z "$RAPIDAPI_KEY" ]; then
+            echo "::warning::Skipping — POSTMAN_API_KEY and/or RAPIDAPI_KEY not configured."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-node@v4
+        if: steps.check.outputs.skip != 'true'
         with:
           node-version: '20'
 
       - name: Install newman
+        if: steps.check.outputs.skip != 'true'
         run: npm i -g newman
 
       - name: Fetch latest collection from Postman
+        if: steps.check.outputs.skip != 'true'
         env:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
         run: |
@@ -34,6 +50,7 @@ jobs:
           test -s collection.json
 
       - name: Build runtime environment
+        if: steps.check.outputs.skip != 'true'
         env:
           RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
         run: |
@@ -50,11 +67,12 @@ jobs:
           JSON
 
       - name: Run newman
+        if: steps.check.outputs.skip != 'true'
         run: |
           newman run collection.json -e env.json --reporters cli,json --reporter-json-export newman-result.json --timeout-request 8000
 
       - name: Upload result artifact
-        if: always()
+        if: always() && steps.check.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: newman-result
